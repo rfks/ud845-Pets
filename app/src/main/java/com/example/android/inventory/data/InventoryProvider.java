@@ -167,13 +167,13 @@ public class InventoryProvider extends ContentProvider {
         if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("Item requires valid quantity");
         }
-
+/*
         // Check that the picture is valid
         Integer picture = values.getAsInteger(ItemEntry.COLUMN_ITEM_PICTURE);
         if (picture == null) {
             throw new IllegalArgumentException("Picture is required");
         }
-
+*/
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -256,7 +256,7 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-
+/*
         // If the {@link ItemEntry#COLUMN_ITEM_PICTURE} key is present,
         // check that the picture value is valid.
         if (values.containsKey(ItemEntry.COLUMN_ITEM_PICTURE)) {
@@ -266,7 +266,7 @@ public class InventoryProvider extends ContentProvider {
                 throw new IllegalArgumentException("Item requires valid picture");
             }
         }
-
+*/
 
         // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {

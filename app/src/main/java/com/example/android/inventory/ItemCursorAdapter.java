@@ -21,10 +21,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.android.inventory.data.InventoryContract.ItemEntry;
+
 
 /**
  * {@link ItemCursorAdapter} is an adapter for a list or grid view
@@ -73,6 +75,7 @@ public class ItemCursorAdapter extends CursorAdapter {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        //Button saleBtn = (Button) view.findViewById(R.id.button);
 
         // Find the columns of item attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
@@ -83,6 +86,12 @@ public class ItemCursorAdapter extends CursorAdapter {
         String itemName = cursor.getString(nameColumnIndex);
         Integer itemQuantity = cursor.getInt(quantityColumnIndex);
         Integer itemPrice = cursor.getInt(priceColumnIndex);
+
+        /* for test purposes only:
+        int pictureColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PICTURE);
+        String itemPicture = cursor.getString(pictureColumnIndex);
+        if (itemPicture == null) itemPicture = new String("Not Available ");
+        */
 
         // Update the TextViews with the attributes for the current item
         nameTextView.setText(itemName);

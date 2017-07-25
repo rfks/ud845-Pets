@@ -111,7 +111,7 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, "supplier@laptopsupplier.ie");
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 10);
         values.put(ItemEntry.COLUMN_ITEM_PRICE, 700);
-        values.put(ItemEntry.COLUMN_ITEM_PICTURE, 7);
+        values.put(ItemEntry.COLUMN_ITEM_PICTURE, "Not Available");
 
         // Insert a new row for laptop into the provider using the ContentResolver.
         // Use the {@link ItemEntry#CONTENT_URI} to indicate that we want to insert
@@ -159,7 +159,8 @@ public class CatalogActivity extends AppCompatActivity implements
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
-                ItemEntry.COLUMN_ITEM_PRICE};
+                ItemEntry.COLUMN_ITEM_PRICE,
+        ItemEntry.COLUMN_ITEM_PICTURE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

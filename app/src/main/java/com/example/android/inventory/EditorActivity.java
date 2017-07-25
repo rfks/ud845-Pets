@@ -15,6 +15,7 @@
  */
 package com.example.android.inventory;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -23,8 +24,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -32,7 +36,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.inventory.data.InventoryContract.ItemEntry;
@@ -42,6 +48,9 @@ import com.example.android.inventory.data.InventoryContract.ItemEntry;
  */
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    // To check the image result
+    private static int RESULT_LOAD_IMAGE = 1;
 
     /** Identifier for the item data loader */
     private static final int EXISTING_ITEM_LOADER = 0;
@@ -60,6 +69,13 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** EditText field to enter the item's price */
     private EditText mPriceEditText;
+
+    /** ImageView field to show the item's picture */
+    private ImageView mPictureImageView;
+    /** String save the item's path */
+    private String mPicturePath;
+
+
 
     /** Boolean flag that keeps track of whether the item has been edited (true) or not (false) */
     private boolean mItemHasChanged = false;
@@ -109,6 +125,8 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierEditText = (EditText) findViewById(R.id.edit_item_supplier);
         mQuantityEditText = (EditText) findViewById(R.id.edit_item_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_item_price);
+        //image
+        mPictureImageView = (ImageView) findViewById(R.id.item_picture);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -117,6 +135,48 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+
+        //Button to load the image from the device storage
+        Button buttonLoadImage = (Button) findViewById(R.id.buttonLoadPicture);
+        buttonLoadImage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
+
+    }
+
+
+    // After the image was chosen it is displayed.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+            Cursor cursor = getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            ImageView imageView = (ImageView) findViewById(R.id.item_picture);
+            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+            mPicturePath = picturePath;
+
+        }
+
 
     }
 
@@ -130,8 +190,7 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierString = mSupplierEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
-        //TODO: add picture instead of String
-        String pictureString = new String("1");//mPriceEditText.getText().toString().trim();
+        String picturePath = mPicturePath;
 
         // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
@@ -150,7 +209,7 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, supplierString);
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, quantityString);
         values.put(ItemEntry.COLUMN_ITEM_PRICE, priceString);
-        values.put(ItemEntry.COLUMN_ITEM_PICTURE, pictureString);
+        values.put(ItemEntry.COLUMN_ITEM_PICTURE, picturePath);
 
         // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
@@ -235,7 +294,7 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Order more" menu option
             case R.id.action_order:
-                //orderMore();
+                orderMore();
                 return true;
             // Respond to a click on the "Increase Quantity" menu option
             case R.id.action_plus:
@@ -308,7 +367,8 @@ public class EditorActivity extends AppCompatActivity implements
                 ItemEntry.COLUMN_ITEM_NAME,
                 ItemEntry.COLUMN_ITEM_SUPPLIER,
                 ItemEntry.COLUMN_ITEM_QUANTITY,
-                ItemEntry.COLUMN_ITEM_PRICE};
+                ItemEntry.COLUMN_ITEM_PRICE,
+                ItemEntry.COLUMN_ITEM_PICTURE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -334,18 +394,22 @@ public class EditorActivity extends AppCompatActivity implements
             int supplierColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
             int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
+            int pictureColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PICTURE);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
+            String picture = cursor.getString(pictureColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mSupplierEditText.setText(supplier);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Integer.toString(price));
+            mPictureImageView.setImageBitmap(BitmapFactory.decodeFile(picture));
+            mPicturePath=picture;
 
         }
     }
@@ -486,4 +550,15 @@ public class EditorActivity extends AppCompatActivity implements
         }
     }
 
+    private void orderMore() {
+        String nameString = mNameEditText.getText().toString().trim();
+        String supplierString = mSupplierEditText.getText().toString().trim();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/html");
+        intent.putExtra(Intent.EXTRA_EMAIL, supplierString);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "New Order");
+        intent.putExtra(Intent.EXTRA_TEXT, "Product Name: ".concat(nameString).concat("\nQuantity: "));
+
+        startActivity(Intent.createChooser(intent, "Send Email"));
+    }
 }
