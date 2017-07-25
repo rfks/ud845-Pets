@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.pets;
+package com.example.android.inventory;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -24,22 +24,22 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.android.pets.data.PetContract.PetEntry;
+import com.example.android.inventory.data.InventoryContract.ItemEntry;
 
 /**
- * {@link PetCursorAdapter} is an adapter for a list or grid view
- * that uses a {@link Cursor} of pet data as its data source. This adapter knows
- * how to create list items for each row of pet data in the {@link Cursor}.
+ * {@link ItemCursorAdapter} is an adapter for a list or grid view
+ * that uses a {@link Cursor} of item data as its data source. This adapter knows
+ * how to create list items for each row of item data in the {@link Cursor}.
  */
-public class PetCursorAdapter extends CursorAdapter {
+public class ItemCursorAdapter extends CursorAdapter {
 
     /**
-     * Constructs a new {@link PetCursorAdapter}.
+     * Constructs a new {@link ItemCursorAdapter}.
      *
      * @param context The context
      * @param c       The cursor from which to get the data.
      */
-    public PetCursorAdapter(Context context, Cursor c) {
+    public ItemCursorAdapter(Context context, Cursor c) {
         super(context, c, 0 /* flags */);
     }
 
@@ -59,8 +59,8 @@ public class PetCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the item data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current item can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -74,22 +74,18 @@ public class PetCursorAdapter extends CursorAdapter {
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
 
-        // Find the columns of pet attributes that we're interested in
-        int nameColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
-        int breedColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
+        // Find the columns of item attributes that we're interested in
+        int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
+        int quantityColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_QUANTITY);
+        int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
 
-        // Read the pet attributes from the Cursor for the current pet
-        String petName = cursor.getString(nameColumnIndex);
-        String petBreed = cursor.getString(breedColumnIndex);
+        // Read the item attributes from the Cursor for the current item
+        String itemName = cursor.getString(nameColumnIndex);
+        Integer itemQuantity = cursor.getInt(quantityColumnIndex);
+        Integer itemPrice = cursor.getInt(priceColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
-        if (TextUtils.isEmpty(petBreed)) {
-            petBreed = context.getString(R.string.unknown_breed);
-        }
-
-        // Update the TextViews with the attributes for the current pet
-        nameTextView.setText(petName);
-        summaryTextView.setText(petBreed);
+        // Update the TextViews with the attributes for the current item
+        nameTextView.setText(itemName);
+        summaryTextView.setText("Quantity: ".concat(itemQuantity.toString()).concat(", Price: ").concat(itemPrice.toString()));
     }
 }
