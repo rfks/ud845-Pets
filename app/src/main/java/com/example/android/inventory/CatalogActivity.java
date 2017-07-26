@@ -221,6 +221,13 @@ public class CatalogActivity extends AppCompatActivity implements
         Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
         */
+
+        ListView lv = (ListView) v.getParent().getParent();
+        int p=lv.getPositionForView(v);
+        ContentValues values = new ContentValues();
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(p));
+        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, p);
+        int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
         Toast.makeText(this, "Sale button clicked!", Toast.LENGTH_SHORT).show();
 
     }
