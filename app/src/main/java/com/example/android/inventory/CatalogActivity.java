@@ -31,9 +31,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventory.data.InventoryContract.ItemEntry;
+
+import static android.R.attr.id;
 
 /**
  * Displays list of items that were entered and stored in the app.
@@ -46,6 +52,8 @@ public class CatalogActivity extends AppCompatActivity implements
 
     /** Adapter for the ListView */
     ItemCursorAdapter mCursorAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,7 @@ public class CatalogActivity extends AppCompatActivity implements
             }
         });
 
+
         // Find the ListView which will be populated with the item data
         ListView itemListView = (ListView) findViewById(R.id.list);
 
@@ -74,10 +83,13 @@ public class CatalogActivity extends AppCompatActivity implements
         mCursorAdapter = new ItemCursorAdapter(this, null);
         itemListView.setAdapter(mCursorAdapter);
 
+
+
         // Setup the item click listener
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
 
@@ -96,8 +108,14 @@ public class CatalogActivity extends AppCompatActivity implements
             }
         });
 
+
+
         // Kick off the loader
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
+
+
+
+
     }
 
     /**
@@ -182,4 +200,30 @@ public class CatalogActivity extends AppCompatActivity implements
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
     }
+
+
+    public void onClickHandler(View v)
+    {
+        //TODO:  update the DB
+        //v.getParent().getParent();
+
+        /* can change the layout
+        LinearLayout vwParentRow = (LinearLayout)v.getParent();
+
+        TextView child = (TextView)vwParentRow.getChildAt(1);
+        child.setText("overwrite");
+        */
+
+        /* but not the DB
+        ContentValues values = new ContentValues();
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(0));
+        int id = ContentUris.parseId();
+        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+        int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
+        */
+        Toast.makeText(this, "Sale button clicked!", Toast.LENGTH_SHORT).show();
+
+    }
+
+
 }

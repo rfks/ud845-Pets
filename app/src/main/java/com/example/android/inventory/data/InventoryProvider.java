@@ -171,6 +171,12 @@ public class InventoryProvider extends ContentProvider {
                 throw new IllegalArgumentException("Item requires valid quantity");
             }
 
+            // Check that the picture is valid
+            String picture = values.getAsString(ItemEntry.COLUMN_ITEM_PICTURE);
+            if (picture == "") {
+                throw new IllegalArgumentException("Picture is required");
+            }
+
         }
         catch (IllegalArgumentException e){
             return null;
@@ -257,6 +263,17 @@ public class InventoryProvider extends ContentProvider {
                     throw new IllegalArgumentException("Item requires valid quantity");
                 }
             }
+
+            // If the {@link ItemEntry#COLUMN_ITEM_PICTURE} key is present,
+            // check that the picture value is valid.
+            if (values.containsKey(ItemEntry.COLUMN_ITEM_PICTURE)) {
+                String picture = values.getAsString(ItemEntry.COLUMN_ITEM_PICTURE);
+                if (picture == "") {
+                    throw new IllegalArgumentException("Picture is required");
+                }
+            }
+
+
         }
         catch (IllegalArgumentException e){
             return -1;
