@@ -49,6 +49,8 @@ import com.example.android.inventory.data.InventoryContract.ItemEntry;
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE=1001;
+
     // To check the image result
     private static int RESULT_LOAD_IMAGE = 1;
 
@@ -408,6 +410,9 @@ public class EditorActivity extends AppCompatActivity implements
             mSupplierEditText.setText(supplier);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Integer.toString(price));
+
+            //Ask for the permission
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             mPictureImageView.setImageBitmap(BitmapFactory.decodeFile(picture));
             mPicturePath=picture;
 
