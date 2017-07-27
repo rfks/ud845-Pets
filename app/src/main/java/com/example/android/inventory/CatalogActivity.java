@@ -205,47 +205,39 @@ public class CatalogActivity extends AppCompatActivity implements
 
     public void onClickHandler(View v)
     {
-        //TODO:  update the DB
-        //v.getParent().getParent();
+        //TODO:  update the DB, not perfect, but works!!
 
-        /* can change the layout
-        LinearLayout vwParentRow = (LinearLayout)v.getParent();
-
-        TextView child = (TextView)vwParentRow.getChildAt(1);
-        child.setText("overwrite");
-        */
-
-        /* but not the DB
-        ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(0));
-        int id = ContentUris.parseId();
-        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
-        int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
-        */
-
+        //get the button position
         ListView lv = (ListView) v.getParent().getParent();
         int p=lv.getPositionForView(v);
 
+        //get the ID of clicked item
         long i=mCursorAdapter.getItemId(p);
 
         Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, i);
 
-        ContentValues values = new ContentValues();
+
      //   String[] select=(String[]) ItemEntry.COLUMN_ITEM_QUANTITY;
+        //get the quantity value
         Cursor cursor;
         cursor = getContentResolver().query(currentItemUri,new String[]{"quantity"},"where _id=?",new String[] {Long.toString(i)},null);
 
-        //int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        //String picturePath = cursor.getString(columnIndex);
+        //check if there was any result
+        int q=-1;
+        if(cursor.moveToFirst()){
+            q = cursor.getInt(0);
+        }
 
-       //// Integer q = cursor.getInt(0);
+        //decrease if greater than 0
+        if (q>0) q--;
 
-
-
-
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(p));
+        //write back the new value to the DB
+        ContentValues values = new ContentValues();
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(q));
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
-        Toast.makeText(this, "Sale button clicked!".concat(Integer.toString(p)), Toast.LENGTH_SHORT).show();
+
+        // for tests only:
+        //Toast.makeText(this, "Sale button clicked!".concat(Integer.toString(q)), Toast.LENGTH_SHORT).show();
 
     }
 
