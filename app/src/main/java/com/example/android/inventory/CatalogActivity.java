@@ -238,14 +238,14 @@ public class CatalogActivity extends AppCompatActivity implements
         //int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         //String picturePath = cursor.getString(columnIndex);
 
-        Integer q = cursor.getInt(0);
+       //// Integer q = cursor.getInt(0);
 
 
 
 
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(p));
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
-        Toast.makeText(this, "Sale button clicked!".concat(Integer.toString(q)), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Sale button clicked!".concat(Integer.toString(p)), Toast.LENGTH_SHORT).show();
 
     }
 
