@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -224,11 +225,27 @@ public class CatalogActivity extends AppCompatActivity implements
 
         ListView lv = (ListView) v.getParent().getParent();
         int p=lv.getPositionForView(v);
+
+        long i=mCursorAdapter.getItemId(p);
+
+        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, i);
+
         ContentValues values = new ContentValues();
+     //   String[] select=(String[]) ItemEntry.COLUMN_ITEM_QUANTITY;
+        Cursor cursor;
+        cursor = getContentResolver().query(currentItemUri,new String[]{"quantity"},"where _id=?",new String[] {Long.toString(i)},null);
+
+        //int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        //String picturePath = cursor.getString(columnIndex);
+
+        Integer q = cursor.getInt(0);
+
+
+
+
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, String.valueOf(p));
-        Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, p);
         int rowsAffected = getContentResolver().update(currentItemUri, values, null, null);
-        Toast.makeText(this, "Sale button clicked!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Sale button clicked!".concat(Integer.toString(q)), Toast.LENGTH_SHORT).show();
 
     }
 
